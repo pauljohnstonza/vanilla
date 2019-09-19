@@ -93,7 +93,8 @@ if (!function_exists('WritePromotedContent')):
                 class="Title"><?php echo anchor(htmlspecialchars(sliceString($content['Name'], $sender->TitleLimit), false), $contentURL, 'DiscussionLink'); ?></div>
             <div class="Body">
                 <?php
-                $linkContent = Gdn_Format::excerpt($content['Body'], $content['Format']);
+                // Sanitized below with `htmlspecialchars`.
+                $linkContent = Gdn::formatService()->renderExcerpt($content['Body'], $content['Format']);
                 $trimmedLinkContent = sliceString($linkContent, $sender->BodyLimit);
 
                 echo anchor(htmlspecialchars($trimmedLinkContent), $contentURL, 'BodyLink');
