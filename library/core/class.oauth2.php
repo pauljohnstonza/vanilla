@@ -564,7 +564,8 @@ class Gdn_OAuth2 extends Gdn_Plugin implements \Vanilla\InjectableInterface {
             throw new Gdn_UserException('The code parameter is either not set or empty.');
         }
 
-        Gdn::session()->stash($this->getProviderKey()); // remove any stashed provider data.
+        $stashID = $sender->Request->get('stashID') ?? betterRandomString(5);
+        Gdn::session()->stash($this->getProviderKey().$stashID); // remove any stashed provider data.
 
         $response = $this->requestAccessToken($code);
         if (!$response) {
@@ -627,12 +628,14 @@ class Gdn_OAuth2 extends Gdn_Plugin implements \Vanilla\InjectableInterface {
             default:
 
                 // This is an sso request, we need to redispatch to /entry/connect/[providerKey] which is base_ConnectData_Handler() in this class.
-                Gdn::session()->stash($this->getProviderKey(), ['AccessToken' => val('access_token', $response), 'RefreshToken' => val('refresh_token', $response), 'Profile' => $profile]);
+                Gdn::session()->stash($this->getProviderKey().$stashID, ['AccessToken' => val('access_token', $response), 'RefreshToken' => val('refresh_token', $response), 'Profile' => $profile]);
                 $url = '/entry/connect/'.$this->getProviderKey();
 
                 //pass the target if there is one so that the user will be redirected to where the request originated.
                 if ($target = val('target', $state)) {
-                    $url .= '?Target='.urlencode($target);
+                    $url .= '?Target='.urlencode($target).'&stashID='.$stashID;
+                } else {
+                    $url .= '?stashID='.$stashID;
                 }
                 redirectTo($url);
                 break;
@@ -650,10 +653,10 @@ class Gdn_OAuth2 extends Gdn_Plugin implements \Vanilla\InjectableInterface {
         if (val(0, $args) != $this->getProviderKey()) {
             return;
         }
-
+        $stashID = $sender->Request->post('stashID') ?? $sender->Request->get('stashID') ?? betterRandomString(5);
         // Retrieve the profile that was saved to the session in the entry controller.
-        $savedProfile = Gdn::session()->stash($this->getProviderKey(), '', false);
-        if (Gdn::session()->stash($this->getProviderKey(), '', false)) {
+        $savedProfile = Gdn::session()->stash($this->getProviderKey().$stashID, '', false);
+        if (Gdn::session()->stash($this->getProviderKey().$stashID, '', false)) {
             $this->log('Base Connect Data Profile Saved in Session', ['profile' => $savedProfile]);
         }
         $profile = val('Profile', $savedProfile);
@@ -681,7 +684,7 @@ class Gdn_OAuth2 extends Gdn_Plugin implements \Vanilla\InjectableInterface {
             'Profile' => $profile
         ];
         $form->setFormValue('Attributes', $attributes);
-
+        $form->addHidden('stashID', $stashID);
         $sender->EventArguments['Profile'] = $profile;
         $sender->EventArguments['Form'] = $form;
 
