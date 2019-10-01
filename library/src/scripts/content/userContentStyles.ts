@@ -101,22 +101,6 @@ export const userContentClasses = useThemeCache(() => {
     const vars = userContentVariables();
     const globalVars = globalVariables();
 
-    const listItem: NestedCSSProperties = {
-        position: "relative",
-        ...margins({
-            top: vars.list.spacing.top,
-            left: vars.list.spacing.left,
-        }),
-        $nest: {
-            "&:first-child": {
-                marginTop: 0,
-            },
-            "&:last-child": {
-                marginBottom: 0,
-            },
-        },
-    };
-
     const headingStyle = (tag: string, fontSize: FontSizeProperty<TLength>): NestedCSSProperties => {
         return {
             marginTop: unit(vars.spacing.base),
@@ -228,6 +212,15 @@ export const userContentClasses = useThemeCache(() => {
                 },
             },
         },
+
+        "&& > br, && > p > br": {
+            margin: 0,
+            $nest: {
+                "&&:before": {
+                    margin: 0,
+                },
+            },
+        },
     };
 
     const linkColors = setAllLinkColors();
@@ -248,7 +241,7 @@ export const userContentClasses = useThemeCache(() => {
     };
 
     const codeStyles: NestedCSSSelectors = {
-        "& .code": {
+        "& .code, & > pre": {
             position: "relative",
             fontSize: vars.code.fontSize,
             fontFamily: `Menlo, Monaco, Consolas, "Courier New", monospace`,
@@ -259,7 +252,7 @@ export const userContentClasses = useThemeCache(() => {
             backgroundColor: colorOut(vars.blocks.bg),
             border: "none",
         },
-        "&& .codeInline": {
+        "&& .codeInline, :not(pre) > code": {
             whiteSpace: "normal",
             ...paddings({
                 top: vars.codeInline.paddingVertical,
@@ -276,7 +269,7 @@ export const userContentClasses = useThemeCache(() => {
             display: "inline",
             position: "static",
         },
-        "&& .codeBlock": {
+        "&& .codeBlock, pre": {
             display: "block",
             wordWrap: "normal",
             lineHeight: vars.codeBlock.lineHeight,
