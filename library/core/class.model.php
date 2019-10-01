@@ -402,7 +402,8 @@ class Gdn_Model extends Gdn_Pluggable {
      *
      *
      * @param array $fields
-     * @return bool
+     * @return mixed Returns the primary key value of the new row or **true** if successful and the primary key can't be fetched.
+     * Returns **false** otherwise.
      */
     public function insert($fields) {
         $result = false;
