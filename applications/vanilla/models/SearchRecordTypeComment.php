@@ -5,8 +5,6 @@
  * @license GPL-2.0-only
  */
 
-namespace Vanilla\Models\SearchRecords;
-
 use Vanilla\Contracts\Search\SearchRecordTypeInterface;
 use Vanilla\Contracts\Search\SearchRecordTypeTrait;
 

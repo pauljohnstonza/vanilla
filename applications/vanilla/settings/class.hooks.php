@@ -11,9 +11,6 @@
 use Garden\Container\Container;
 use Garden\Container\Reference;
 use Vanilla\Contracts\Search\SearchRecordTypeProviderInterface;
-use Vanilla\Models\SearchRecords\SearchRecordTypeComment;
-use Vanilla\Models\SearchRecords\SearchRecordTypeDiscussion;
-use Vanilla\Models\SearchRecords\SearchRecordTypeProvider;
 
 /**
  * Vanilla's event handlers.
