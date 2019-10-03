@@ -634,7 +634,7 @@ class Gdn_OAuth2 extends Gdn_Plugin implements \Vanilla\InjectableInterface {
                 $stashID = $this->sessionModel->insert(['Attributes' => ['AccessToken' => $response['access_token'] , 'RefreshToken' => $response['refresh_token'], 'Profile' => $profile], 'DateExpires' => date(MYSQL_DATE_FORMAT, time() + 3*60)]);
                 $url = '/entry/connect/'.$this->getProviderKey();
                 // Pass the "sessionID" to in the query so that it can be retrieved.
-                $url .= '?'.http_build_query(array_filter(['Target' => urlencode($target) ?? '', 'stashID' => $stashID]));
+                $url .= '?'.http_build_query(array_filter(['Target' => $state['target'] ?? '/', 'stashID' => $stashID]));
                 // Pass no-cache headers.
                 \Vanilla\Web\CacheControlMiddleware::sendCacheControlHeaders(\Vanilla\Web\CacheControlMiddleware::NO_CACHE);
                 // Redirect to the connect script.
