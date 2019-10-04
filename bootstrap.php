@@ -14,6 +14,11 @@ use Vanilla\Utility\ContainerUtils;
 use \Vanilla\Formatting\Formats;
 use Firebase\JWT\JWT;
 use Vanilla\Web\TwigEnhancer;
+use Vanilla\Contracts\Search\SearchRecordTypeProviderInterface;
+use Vanilla\Models\SearchRecordTypeProvider;
+use Vanilla\Models\SearchRecordTypeDiscussion;
+use Vanilla\Models\SearchRecordTypeComment;
+
 
 if (!defined('APPLICATION')) exit();
 /**
@@ -366,6 +371,15 @@ $dic->setInstance(Garden\Container\Container::class, $dic)
     ->addCall('setDispatchEventName', ['SchedulerDispatch'])
     ->addCall('setDispatchedEventName', ['SchedulerDispatched'])
     ->setShared(true)
+
+    ->rule(SearchRecordTypeProviderInterface::class)
+        ->setClass(SearchRecordTypeProvider::class)
+        ->addCall('setType', [new SearchRecordTypeDiscussion()])
+        ->addCall('setType', [new SearchRecordTypeComment()])
+        ->addCall('addProviderGroup', [SearchRecordTypeDiscussion::PROVIDER_GROUP])
+        ->addAlias('SearchRecordTypeProvider')
+        ->setShared(true)
+
 ;
 
 // Run through the bootstrap with dependencies.
