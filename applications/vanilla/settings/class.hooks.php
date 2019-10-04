@@ -11,6 +11,9 @@
 use Garden\Container\Container;
 use Garden\Container\Reference;
 use Vanilla\Contracts\Search\SearchRecordTypeProviderInterface;
+use Vanilla\Models\SearchRecordTypeProvider;
+use Vanilla\Models\SearchRecordTypeDiscussion;
+use Vanilla\Models\SearchRecordTypeComment;
 
 /**
  * Vanilla's event handlers.
@@ -34,8 +37,8 @@ class VanillaHooks implements Gdn_IPlugin {
         $dic
             ->rule(SearchRecordTypeProviderInterface::class)
             ->setClass(SearchRecordTypeProvider::class)
-            ->addCall('setType', [new \SearchRecordTypeDiscussion()])
-            ->addCall('setType', [new \SearchRecordTypeComment()])
+            ->addCall('setType', [new SearchRecordTypeDiscussion()])
+            ->addCall('setType', [new SearchRecordTypeComment()])
             ->addCall('addProviderGroup', [SearchRecordTypeDiscussion::PROVIDER_GROUP])
             ->addAlias('SearchRecordTypeProvider')
             ->setShared(true)

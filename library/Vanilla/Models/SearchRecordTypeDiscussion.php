@@ -5,31 +5,33 @@
  * @license GPL-2.0-only
  */
 
+namespace Vanilla\Models;
+
 use Vanilla\Contracts\Search\SearchRecordTypeInterface;
 use Vanilla\Contracts\Search\SearchRecordTypeTrait;
 
 /**
- * Class SearchRecordTypeComment
- * @package Vanilla\AdvancedSearch\Models
+ * Class SearchRecordTypeDiscussion
+ * @package Vanilla\Models
  */
-class SearchRecordTypeComment implements SearchRecordTypeInterface {
+class SearchRecordTypeDiscussion implements SearchRecordTypeInterface {
     use SearchRecordTypeTrait;
 
     const PROVIDER_GROUP = 'advanced';
 
-    const TYPE = 'comment';
+    const TYPE = 'discussion';
 
-    const API_TYPE_KEY = 'comment';
+    const API_TYPE_KEY = 'discussion';
 
-    const SUB_KEY = 'c';
+    const SUB_KEY = 'd';
 
-    const CHECKBOX_LABEL = 'comments';
+    const CHECKBOX_LABEL = 'discussions';
 
-    const SPHINX_DTYPE = 100;
+    const SPHINX_DTYPE = 0;
 
-    const SPHINX_INDEX = 'Comment';
+    const SPHINX_INDEX = 'Discussion';
 
-    const GUID_OFFSET = 2;
+    const GUID_OFFSET = 1;
 
     const GUID_MULTIPLIER = 10;
 
@@ -37,7 +39,7 @@ class SearchRecordTypeComment implements SearchRecordTypeInterface {
      * @inheritdoc
      */
     public function getDocuments(array $IDs, \SearchModel $searchModel): array {
-        $result = $searchModel->getComments($IDs);
+        $result = $searchModel->getDiscussions($IDs);
         foreach ($result as &$record) {
             $record['guid'] = $record['PrimaryID'] * self::GUID_MULTIPLIER + self::GUID_OFFSET;
         }
