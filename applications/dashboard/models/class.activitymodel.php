@@ -7,13 +7,19 @@
  * @package Dashboard
  * @since 2.0
  */
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Activity data management.
  */
-class ActivityModel extends Gdn_Model {
+class ActivityModel extends Gdn_Model implements LoggerAwareInterface {
+    use LoggerAwareTrait;
 
     use \Vanilla\FloodControlTrait;
+
+    /** @var bool */
+    private $debug;
 
     /** Activity notification level: Everyone. */
     const NOTIFY_PUBLIC = -1;
@@ -1451,10 +1457,15 @@ class ActivityModel extends Gdn_Model {
      * @throws Exception
      */
     public function save($data, $preference = false, $options = []) {
+        /** @var Psr\Log\LoggerInterface $logger */
+        $logger = GDN::getContainer()->get(Psr\Log\LoggerInterface::class);
         trace('ActivityModel->save()');
         $activity = $data;
         $this->_touch($activity);
-
+        $logger->info('Activity 1', [
+            'Activity' => $activity,
+            'Preference' => $preference,
+            'Options' => $options]);
         if ($activity['ActivityUserID'] == $activity['NotifyUserID'] && !val('Force', $options)) {
             trace('Skipping activity because it would notify the user of something they did.');
 
@@ -1473,6 +1484,11 @@ class ActivityModel extends Gdn_Model {
             }
 
             if (!$activity['Notified'] && !$activity['Emailed'] && !val('Force', $options)) {
+                $logger->info('Activity 2', [
+                    'Activity' => $activity,
+                    'Popup' => $popup,
+                    'Email' => $email
+                ]);
                 trace("Skipping activity because the user has no preference set.");
                 return null;
             }
@@ -1511,6 +1527,9 @@ class ActivityModel extends Gdn_Model {
             )->firstRow();
 
             if ($checkActivity) {
+                $logger->info('Activity 3', [
+                    'CheckActivity' => $checkActivity
+                ]);
                 return false;
             }
         }
@@ -1564,6 +1583,9 @@ class ActivityModel extends Gdn_Model {
                 if (!val('DisableFloodControl', $options)) {
                     $storageObject = FloodControlHelper::configure($this, 'Vanilla', 'Activity');
                     if ($this->checkUserSpamming(Gdn::session()->UserID, $storageObject)) {
+                        $logger->info('Activity 4', [
+                            'StorageObject' => $storageObject
+                        ]);
                         return false;
                     }
                 }
@@ -1580,10 +1602,17 @@ class ActivityModel extends Gdn_Model {
                 $this->fireEvent('BeforeSave');
 
                 if (count($this->validationResults()) > 0) {
+                    $logger->info('Activity 5', [
+                        'Validation' => $this->validationResults()
+                    ]);
                     return false;
                 }
 
                 if ($handled) {
+                    $logger->info('Activity 6', [
+                        'Activity' => $activity,
+                        'Handled' => $handled
+                    ]);
                     // A plugin handled this activity so don't save it.
                     return $activity;
                 }
@@ -1592,6 +1621,9 @@ class ActivityModel extends Gdn_Model {
                     // Check for spam
                     $spam = SpamModel::isSpam('Activity', $activity);
                     if ($spam) {
+                        $logger->info('Activity 7', [
+                            'Spam' => $spam
+                        ]);
                         return SPAM;
                     }
 
@@ -1599,13 +1631,18 @@ class ActivityModel extends Gdn_Model {
                     $approvalRequired = checkRestriction('Vanilla.Approval.Require');
                     if ($approvalRequired && !val('Verified', Gdn::session()->User)) {
                         LogModel::insert('Pending', 'Activity', $activity);
+                        $logger->info('Activity 8', [
+                            'ApprovalRequired' => $approvalRequired
+                        ]);
                         return UNAPPROVED;
                     }
                 }
 
                 $activityID = $this->SQL->insert('Activity', $activity);
                 $activity['ActivityID'] = $activityID;
-
+                $logger->info('Activity 10', [
+                    'ActivityID' => $activityID
+                ]);
                 $this->prune();
             }
         } else {
@@ -1617,11 +1654,17 @@ class ActivityModel extends Gdn_Model {
             $this->fireEvent('BeforeSave');
 
             if (count($this->validationResults()) > 0) {
+                $logger->info('Activity 9', [
+                    'Validation' => count($this->validationResults())
+                ]);
                 return false;
             }
 
             $this->SQL->put('Activity', $activity, ['ActivityID' => $activityID]);
             $activity['ActivityID'] = $activityID;
+            $logger->info('Activity 11', [
+                'ActivityID' => $activityID
+            ]);
         }
         $activity['Data'] = $activityData;
 
