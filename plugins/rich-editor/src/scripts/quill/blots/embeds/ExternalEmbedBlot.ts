@@ -13,6 +13,7 @@ import ErrorBlot, { ErrorBlotType, IErrorData } from "@rich-editor/quill/blots/e
 import LoadingBlot from "@rich-editor/quill/blots/embeds/LoadingBlot";
 import { forceSelectionUpdate } from "@rich-editor/quill/utility";
 import { logError } from "@vanilla/utils";
+import { uniqueIDFromPrefix } from "@library/utility/idUtils";
 
 const DATA_KEY = "__embed-data__";
 
@@ -81,6 +82,8 @@ export default class ExternalEmbedBlot extends FocusableEmbedBlot {
             },
         };
         setData(this.domNode as Element, DATA_KEY, mergedValue);
+        // Force update of dom node.
+        (this.domNode as HTMLHtmlElement).setAttribute("test", uniqueIDFromPrefix());
     };
 
     /**
