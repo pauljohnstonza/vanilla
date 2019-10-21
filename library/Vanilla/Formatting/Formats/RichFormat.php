@@ -9,6 +9,7 @@ namespace Vanilla\Formatting\Formats;
 
 use Garden\Schema\ValidationException;
 use Garden\StaticCacheTranslationTrait;
+use Vanilla\Contracts\Formatting\HeadingProviderInterface;
 use Vanilla\Formatting\Attachment;
 use Vanilla\Formatting\BaseFormat;
 use Vanilla\Formatting\Embeds\FileEmbed;
@@ -177,7 +178,9 @@ class RichFormat extends BaseFormat {
         try {
             $operations = Quill\Parser::jsonToOperations($content);
             $parser = (new Quill\Parser())
-                ->addBlot(HeadingTerminatorBlot::class);
+                ->addBlot(HeadingTerminatorBlot::class)
+                ->addBlot(ExternalBlot::class);
+
             $blotGroups = $parser->parse($operations);
 
             /** @var Quill\BlotGroup $blotGroup */
@@ -190,13 +193,20 @@ class RichFormat extends BaseFormat {
                         $blot->getReference()
                     );
                 }
+
+                if ($blot instanceof ExternalBlot) {
+                    $embed = $blot->getEmbed();
+                    if ($embed instanceof HeadingProviderInterface) {
+                        $outline = array_merge($outline, $embed->getHeadings());
+                    }
+                }
             }
+
             return $outline;
         } catch (\Throwable $e) {
             $this->logBadInput($e);
             return [];
         }
-
     }
 
     /**
