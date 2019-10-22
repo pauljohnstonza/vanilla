@@ -15,7 +15,7 @@ use Vanilla\Contracts\Site\SiteSectionProviderInterface;
 class MockSiteSectionProvider implements SiteSectionProviderInterface {
 
     /**
-     * @var array $siteSections
+     * @var SiteSectionInterface[] $siteSections
      */
     private $siteSections = [];
 
@@ -72,6 +72,7 @@ class MockSiteSectionProvider implements SiteSectionProviderInterface {
      * @inheritdoc
      */
     public function getCurrentSiteSection(): SiteSectionInterface {
+        return $this->siteSections[0];
     }
 
     /**
@@ -86,16 +87,20 @@ class MockSiteSectionProvider implements SiteSectionProviderInterface {
         $siteSections = [];
 
         foreach ($locales as $locale) {
-            $siteSectionPath = $locale.'/';
-            $siteSectionName = "siteSectionName_".$locale;
-            $siteSectionGroup = "mockSiteSectionGroup-1";
-            $siteSectionID = "mockSiteSection-".$locale;
             $siteSections[] = new MockSiteSection(
-                $siteSectionName,
+                "siteSectionName_".$locale,
                 $locale,
-                $siteSectionPath,
-                $siteSectionID,
-                $siteSectionGroup
+                $locale.'/',
+                "mockSiteSection-".$locale,
+                "mockSiteSectionGroup-1"
+            );
+
+            $siteSections[] = new MockSiteSection(
+                "ssg2_siteSectionName_".$locale,
+                $locale,
+                'ssg2-'.$locale.'/',
+                "ssg2-mockSiteSection-".$locale,
+                "mockSiteSectionGroup-2"
             );
         }
 
