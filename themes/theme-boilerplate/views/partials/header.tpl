@@ -26,7 +26,7 @@
             </nav>
             <div class="Header-flexSpacer"></div>
             <div class="Header-right">
-                {community_chooser buttonType='titleBarLink' buttonClass='Header-desktopCommunityChooser'}
+                {location_chooser buttonType='titleBarLink' buttonClass='Header-desktopCommunityChooser'}
                 <div class="MeBox-header">
                     {module name="MeModule" CssClass="FlyoutRight"}
                 </div>
@@ -60,7 +60,7 @@
             {activity_link format=$linkFormat}
             {custom_menu format=$linkFormat}
             <div class='Navigation-linkContainer'>
-                {community_chooser buttonType='reset' fullWidth=true buttonClass='Navigation-link'}
+                {location_chooser buttonType='reset' fullWidth=true buttonClass='Navigation-link'}
             </div>
         </div>
     </nav>

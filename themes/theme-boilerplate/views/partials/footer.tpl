@@ -5,7 +5,7 @@
                 <p class="Footer-copyright">{t c="© Vanilla Keystone Theme"} {$smarty.now|date_format:"%Y"}</p>
             </div>
             <div class="col">
-                {community_chooser}
+                {location_chooser}
             </div>
             <div class="col col-logo">
                 <div class="Vanilla-logo">
