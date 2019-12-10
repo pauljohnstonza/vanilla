@@ -67,9 +67,9 @@ const titleBarNavClasses = useThemeCache(() => {
             position: "relative",
             height: unit(titleBarVars.sizing.height),
         },
-        mediaQueries.oneColumnDown({
-            height: unit(titleBarVars.sizing.mobile.height),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     height: unit(titleBarVars.sizing.mobile.height),
+        // }),
     );
 
     const navigation = style("navigation", {});
@@ -81,11 +81,11 @@ const titleBarNavClasses = useThemeCache(() => {
             height: unit(titleBarVars.sizing.height),
             ...paddings(vars.padding),
         },
-        mediaQueries.oneColumnDown({
-            height: px(titleBarVars.sizing.mobile.height),
-            justifyContent: "center",
-            width: percent(100),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     height: px(titleBarVars.sizing.mobile.height),
+        //     justifyContent: "center",
+        //     width: percent(100),
+        // }),
     );
 
     const link = style("link", {
