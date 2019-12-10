@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "@reach/tooltip": "^0.3.0",
+        "add": "^2.0.6",
         "axios": "0.18.1",
         "classnames": "2.2.6",
         "csx": "9.0.0",
@@ -37,6 +38,7 @@
         "react-aria-live": "2.0.4",
         "react-autosize-textarea": "^7.0.0",
         "react-day-picker": "7.2.4",
+        "react-detectable-overflow": "^0.2.0",
         "react-dom": "^16.9.0",
         "react-loadable": "5.5.0",
         "react-redux": "^7.1.0",
@@ -59,7 +61,8 @@
         "typescript-fsa-reducers": "^1.2.0",
         "typestyle": "^2.0.1",
         "validator": "10.8.0",
-        "webfontloader": "1.6.28"
+        "webfontloader": "1.6.28",
+        "yarn": "^1.21.0"
     },
     "devDependencies": {
         "@babel/core": "^7.7.2",

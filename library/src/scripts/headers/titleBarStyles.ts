@@ -28,9 +28,9 @@ import { NestedCSSProperties } from "typestyle/lib/types";
 import { iconClasses } from "@library/icons/iconClasses";
 import { shadowHelper } from "@library/styles/shadowHelpers";
 import { IButtonType } from "@library/forms/styleHelperButtonInterface";
-import { buttonClasses, buttonResetMixin, ButtonTypes } from "@library/forms/buttonStyles";
+import { buttonResetMixin, ButtonTypes } from "@library/forms/buttonStyles";
 import generateButtonClass from "@library/forms/styleHelperButtonGenerator";
-import classNames from "classnames";
+import { media } from "typestyle";
 
 enum TitleBarBorderType {
     BORDER = "border",
@@ -192,6 +192,26 @@ export const titleBarVariables = useThemeCache(() => {
         tablet: {},
     });
 
+    const titleBarBreakPoints = makeThemeVars("titleBarBreakPoints", {
+        noBleed: 100000,
+    });
+
+    const mediaQueries = () => {
+        const noBleed = (styles: NestedCSSProperties) => {
+            return media(
+                {
+                    maxWidth: px(titleBarBreakPoints.noBleed),
+                    // minWidth: useMinWidth ? px(panelLayoutBreakPoints.twoColumn + 1) : undefined,
+                },
+                styles,
+            );
+        };
+
+        return {
+            noBleed,
+        };
+    };
+
     return {
         border,
         sizing,
@@ -210,6 +230,7 @@ export const titleBarVariables = useThemeCache(() => {
         meBox,
         bottomRow,
         logo,
+        mediaQueries,
     };
 });
 
@@ -218,7 +239,7 @@ export const titleBarClasses = useThemeCache(() => {
     const vars = titleBarVariables();
     const formElementVars = formElementsVariables();
     const headerColors = vars.colors;
-    const mediaQueries = layoutVariables().mediaQueries();
+    // const mediaQueries = layoutVariables().mediaQueries();
     const flex = flexHelper();
     const style = styleFactory("titleBar");
 
@@ -273,9 +294,9 @@ export const titleBarClasses = useThemeCache(() => {
                 },
             },
         },
-        ...mediaQueries.oneColumnDown({
-            height: px(vars.sizing.mobile.height),
-        }).$nest,
+        // ...mediaQueries.oneColumnDown({
+        //     height: px(vars.sizing.mobile.height),
+        // }).$nest,
     });
 
     const spacer = style(
@@ -283,9 +304,9 @@ export const titleBarClasses = useThemeCache(() => {
         {
             height: px(vars.sizing.height),
         },
-        mediaQueries.oneColumnDown({
-            height: px(vars.sizing.mobile.height),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     height: px(vars.sizing.mobile.height),
+        // }),
     );
 
     const bar = style(
@@ -303,7 +324,7 @@ export const titleBarClasses = useThemeCache(() => {
                 },
             },
         },
-        mediaQueries.oneColumnDown({ height: px(vars.sizing.mobile.height) }),
+        // mediaQueries.oneColumnDown({ height: px(vars.sizing.mobile.height) }),
     );
 
     const logoContainer = style(
@@ -328,10 +349,10 @@ export const titleBarClasses = useThemeCache(() => {
                 },
             },
         },
-        mediaQueries.oneColumnDown({
-            height: px(vars.sizing.mobile.height),
-            marginRight: unit(0),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     height: px(vars.sizing.mobile.height),
+        //     marginRight: unit(0),
+        // }),
     );
 
     const logoFlexBasis = style("logoFlexBasis", {
@@ -350,7 +371,7 @@ export const titleBarClasses = useThemeCache(() => {
             height: px(vars.sizing.height),
             color: "inherit",
         },
-        mediaQueries.oneColumnDown({ height: px(vars.sizing.mobile.height) }),
+        // mediaQueries.oneColumnDown({ height: px(vars.sizing.mobile.height) }),
     );
 
     const locales = style(
@@ -370,7 +391,7 @@ export const titleBarClasses = useThemeCache(() => {
                 },
             },
         },
-        mediaQueries.oneColumnDown({ height: px(vars.sizing.mobile.height) }),
+        // mediaQueries.oneColumnDown({ height: px(vars.sizing.mobile.height) }),
     );
 
     const messages = style("messages", {
@@ -399,7 +420,7 @@ export const titleBarClasses = useThemeCache(() => {
                 },
             },
         },
-        mediaQueries.oneColumnDown({ height: px(vars.sizing.mobile.height) }),
+        // mediaQueries.oneColumnDown({ height: px(vars.sizing.mobile.height) }),
     );
 
     const compactSearchResults = style("compactSearchResults", {
@@ -437,9 +458,9 @@ export const titleBarClasses = useThemeCache(() => {
             margin: `0 ${px(vars.sizing.spacer / 2)}`,
             borderRadius: px(vars.button.borderRadius),
         },
-        mediaQueries.oneColumnDown({
-            fontSize: px(vars.button.mobile.fontSize),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     fontSize: px(vars.button.mobile.fontSize),
+        // }),
     );
 
     const localeToggle = style(
@@ -447,9 +468,9 @@ export const titleBarClasses = useThemeCache(() => {
         {
             height: px(vars.sizing.height),
         },
-        mediaQueries.oneColumnDown({
-            height: px(vars.sizing.mobile.height),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     height: px(vars.sizing.mobile.height),
+        // }),
     );
 
     const languages = style("languages", {
@@ -522,11 +543,11 @@ export const titleBarClasses = useThemeCache(() => {
                 },
             },
         },
-        mediaQueries.oneColumnDown({
-            height: px(vars.sizing.mobile.height),
-            width: px(vars.sizing.mobile.width),
-            minWidth: px(vars.sizing.mobile.width),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     height: px(vars.sizing.mobile.height),
+        //     width: px(vars.sizing.mobile.width),
+        //     minWidth: px(vars.sizing.mobile.width),
+        // }),
     );
 
     const linkButton = generateButtonClass(vars.linkButton);
@@ -611,11 +632,11 @@ export const titleBarClasses = useThemeCache(() => {
             alignItems: "center",
             flexBasis: vars.endElements.flexBasis,
         },
-        mediaQueries.oneColumnDown({
-            flexShrink: 1,
-            flexBasis: px(vars.endElements.mobile.flexBasis),
-            height: px(vars.sizing.mobile.height),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     flexShrink: 1,
+        //     flexBasis: px(vars.endElements.mobile.flexBasis),
+        //     height: px(vars.sizing.mobile.height),
+        // }),
     );
 
     const leftFlexBasis = style(
@@ -624,10 +645,10 @@ export const titleBarClasses = useThemeCache(() => {
             ...flex.middleLeft(),
             flexBasis: vars.endElements.flexBasis,
         },
-        mediaQueries.oneColumnDown({
-            flexShrink: 1,
-            flexBasis: px(vars.endElements.mobile.flexBasis),
-        }),
+        // mediaQueries.oneColumnDown({
+        //     flexShrink: 1,
+        //     flexBasis: px(vars.endElements.mobile.flexBasis),
+        // }),
     );
 
     const signIn = style("signIn", {
@@ -790,7 +811,7 @@ export const titleBarHomeClasses = useThemeCache(() => {
     const vars = titleBarVariables();
     const globalVars = globalVariables();
     const style = styleFactory("titleBarHome");
-    const mediaQueries = layoutVariables().mediaQueries();
+    // const mediaQueries = layoutVariables().mediaQueries();
 
     const root = style({
         minHeight: vars.sizing.mobile.height * 2,
