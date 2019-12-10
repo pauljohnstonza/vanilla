@@ -33,10 +33,9 @@ import { meBoxClasses } from "@library/headers/mebox/pieces/meBoxStyles";
 import { ButtonTypes } from "@library/forms/buttonStyles";
 import SmartLink from "@library/routing/links/SmartLink";
 import { SignInIcon } from "@library/icons/common";
-import DropDown from "@library/flyouts/DropDown";
 import Hamburger from "@library/flyouts/Hamburger";
 import { hamburgerClasses } from "@library/flyouts/hamburgerStyles";
-import { styleFactory } from "@library/styles/styleUtils";
+import { Dispatch, SetStateAction } from "react";
 
 interface IProps extends IDeviceProps, IInjectableUserState, IWithPagesProps {
     container?: Element; // Element containing header. Should be the default most if not all of the time.
@@ -46,6 +45,8 @@ interface IProps extends IDeviceProps, IInjectableUserState, IWithPagesProps {
     isFixed?: boolean;
     useMobileBackButton?: boolean;
     hamburger?: React.ReactNode; // Not to be used with mobileDropDownContent
+    navigationCollapsed?: boolean;
+    setNavigationCollapsed?: (collapsed: boolean) => {};
 }
 
 interface IState {
@@ -88,11 +89,14 @@ export class TitleBar extends React.Component<IProps, IState> {
         isScrolledOff: false,
     };
     public render() {
-        const { isFixed, hamburger } = this.props;
-        const isMobile = this.props.device === Devices.MOBILE || this.props.device === Devices.XS;
+        const { isFixed, hamburger, navigationCollapsed = false, setNavigationCollapsed } = this.props;
+        const isMobile = false;
+        // const isMobile = this.props.device === Devices.MOBILE || this.props.device === Devices.XS;
         const classes = titleBarClasses();
         const showMobileDropDown = isMobile && !this.state.openSearch && this.props.title;
-        const showHamburger = isMobile && !this.state.openSearch && !!hamburger;
+        // const showHamburger = isMobile && !this.state.openSearch && !!hamburger;
+        const showHamburger = navigationCollapsed && !this.state.openSearch && !!hamburger;
+
         const classesMeBox = meBoxClasses();
 
         const containerElement = this.props.container || document.getElementById("titleBar")!;
@@ -110,7 +114,6 @@ export class TitleBar extends React.Component<IProps, IState> {
                     <PanelWidgetHorizontalPadding>
                         <div className={classNames("titleBar-bar", classes.bar)}>
                             {!this.state.openSearch &&
-                                isMobile &&
                                 (this.props.useMobileBackButton ? (
                                     <BackLink
                                         className={classNames(

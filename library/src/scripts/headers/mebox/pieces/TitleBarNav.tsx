@@ -4,13 +4,15 @@
  * @license GPL-2.0-only
  */
 
-import React from "react";
+import React, { useState } from "react";
 import titleBarNavClasses from "@library/headers/titleBarNavStyles";
 import classNames from "classnames";
 import { titleBarClasses } from "@library/headers/titleBarStyles";
 import TitleBarNavItem, { ITitleBarNav } from "@library/headers/mebox/pieces/TitleBarNavItem";
 import Permission from "@library/features/users/Permission";
 import EditorUploadButton from "@rich-editor/editor/pieces/EditorUploadButton";
+import { DetectableOverflow } from "react-detectable-overflow/dist/DetectableOverflow";
+import { setState } from "expect/build/jestMatchersObject";
 
 export interface ITitleBarNavProps {
     className?: string;
@@ -42,6 +44,8 @@ export default class TitleBarNav extends React.Component<ITitleBarNavProps> {
     private static extraNavItems: React.ComponentType[] = [];
 
     public render() {
+        const [hasOverflow, setHasOverflow] = useState(false);
+
         const classes = titleBarNavClasses();
         const dataLength = this.props.data ? Object.keys(this.props.data!).length - 1 : 0;
         const content = this.props.data
@@ -74,18 +78,26 @@ export default class TitleBarNav extends React.Component<ITitleBarNavProps> {
               })
             : null;
 
-        return (
-            <nav className={classNames("headerNavigation", this.props.className, classes.navigation)}>
-                <ul className={classNames("headerNavigation-items", this.props.listClassName, classes.items)}>
-                    {this.props.children ? this.props.children : content}
-                    <>
-                        {this.props.excludeExtraNavItems ??
-                            TitleBarNav.extraNavItems.map((ComponentClass, i) => {
-                                return <ComponentClass key={i} />;
-                            })}
-                    </>
-                </ul>
-            </nav>
-        );
+        if (hasOverflow) {
+            return null;
+        } else {
+            return (
+                <DetectableOverflow
+                    onChange={overflow => {
+                        setHasOverflow(overflow);
+                    }}
+                >
+                    <nav className={classNames("headerNavigation", this.props.className, classes.navigation)}>
+                        <ul className={classNames("headerNavigation-items", this.props.listClassName, classes.items)}>
+                            {this.props.children ? this.props.children : content}
+                            {this.props.excludeExtraNavItems ??
+                                TitleBarNav.extraNavItems.map((ComponentClass, i) => {
+                                    return <ComponentClass key={i} />;
+                                })}
+                        </ul>
+                    </nav>
+                </DetectableOverflow>
+            );
+        }
     }
 }
