@@ -19,3 +19,4 @@ export * from "./scripts";
 export * from "./shadowDom";
 export * from "./TabHandler";
 export * from "./visibility";
+export * from "./window";
