@@ -35,7 +35,10 @@ import SmartLink from "@library/routing/links/SmartLink";
 import { SignInIcon } from "@library/icons/common";
 import Hamburger from "@library/flyouts/Hamburger";
 import { hamburgerClasses } from "@library/flyouts/hamburgerStyles";
-import { Dispatch, SetStateAction } from "react";
+import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
+import { getCurrentWindowWidth } from "@vanilla/dom-utils/src";
+import { DetectableOverflow } from "react-detectable-overflow/dist/DetectableOverflow";
 
 interface IProps extends IDeviceProps, IInjectableUserState, IWithPagesProps {
     container?: Element; // Element containing header. Should be the default most if not all of the time.
@@ -53,6 +56,8 @@ interface IState {
     openSearch: boolean;
     showingSuggestions: boolean;
     isScrolledOff: boolean;
+    breakPointHamburger: number;
+    breakPointHamburgerActive: boolean;
 }
 
 /**
@@ -87,15 +92,23 @@ export class TitleBar extends React.Component<IProps, IState> {
         openSearch: false,
         showingSuggestions: false,
         isScrolledOff: false,
+        breakPointHamburger: -1,
+        breakPointHamburgerActive: false,
     };
+
     public render() {
-        const { isFixed, hamburger, navigationCollapsed = false, setNavigationCollapsed } = this.props;
-        const isMobile = false;
-        // const isMobile = this.props.device === Devices.MOBILE || this.props.device === Devices.XS;
+        const { isFixed, hamburger } = this.props;
+        const isMobile =
+            this.props.device === Devices.MOBILE ||
+            this.props.device === Devices.XS ||
+            this.state.breakPointHamburgerActive;
+
+        //console.log("is Mobile:", isMobile);
+        //console.log("this.state.breakPointHamburgerActive:", this.state.breakPointHamburgerActive);
+
         const classes = titleBarClasses();
         const showMobileDropDown = isMobile && !this.state.openSearch && this.props.title;
-        // const showHamburger = isMobile && !this.state.openSearch && !!hamburger;
-        const showHamburger = navigationCollapsed && !this.state.openSearch && !!hamburger;
+        const showHamburger = !this.state.openSearch && !!hamburger && isMobile;
 
         const classesMeBox = meBoxClasses();
 
@@ -105,99 +118,126 @@ export class TitleBar extends React.Component<IProps, IState> {
             <HashOffsetReporter>
                 <Container>
                     <PanelWidgetHorizontalPadding>
-                        <div className={classNames("titleBar-bar", classes.bar)}>
-                            {!this.state.openSearch &&
-                                (this.props.useMobileBackButton ? (
-                                    <BackLink
-                                        className={classNames(
-                                            "titleBar-leftFlexBasis",
-                                            "titleBar-backLink",
-                                            classes.leftFlexBasis,
-                                        )}
-                                        linkClassName={classes.button}
-                                    />
-                                ) : (
-                                    !hamburger && <FlexSpacer className="pageHeading-leftSpacer" />
-                                ))}
-                            {!isMobile && (
-                                <HeaderLogo
-                                    className={classNames("titleBar-logoContainer", classes.logoContainer)}
-                                    logoClassName="titleBar-logo"
-                                    logoType={LogoType.DESKTOP}
-                                />
-                            )}
-                            {!this.state.openSearch && !isMobile && (
-                                <TitleBarNav
-                                    {...dummyNavigationData()}
-                                    className={classNames("titleBar-nav", classes.nav)}
-                                    linkClassName={classNames("titleBar-navLink", classes.topElement)}
-                                    linkContentClassName="titleBar-navLinkContent"
-                                />
-                            )}
-                            {showMobileDropDown && !showHamburger && (
-                                <MobileDropDown
-                                    title={this.props.title!}
-                                    buttonClass={classNames("titleBar-mobileDropDown")}
-                                >
-                                    {this.props.mobileDropDownContent}
-                                </MobileDropDown>
-                            )}
-
-                            {showHamburger && (
-                                <>
-                                    <Hamburger buttonClassName={classes.hamburger} contents={hamburger} />
-                                    <FlexSpacer
-                                        className={hamburgerClasses().spacer(1 + TitleBar.extraMeBoxComponents.length)}
-                                    />
-                                    <div className={classes.logoCenterer}>
-                                        <HeaderLogo
-                                            className={classNames("titleBar-logoContainer", classes.logoContainer)}
-                                            logoClassName="titleBar-logo"
-                                            logoType={LogoType.MOBILE}
+                        <DetectableOverflow
+                            onChange={overflow => {
+                                console.log("overflow: ", overflow);
+                                if (overflow) {
+                                    const breakPoint = getCurrentWindowWidth();
+                                    if (breakPoint) {
+                                        // Case for hamburger style
+                                        if (
+                                            (!!hamburger && breakPoint < this.state.breakPointHamburger) ||
+                                            this.state.breakPointHamburger === -1
+                                        ) {
+                                            this.setState(
+                                                {
+                                                    breakPointHamburger: breakPoint,
+                                                },
+                                                () => {
+                                                    this.checkForBreakPoints();
+                                                },
+                                            );
+                                        }
+                                    }
+                                }
+                            }}
+                        >
+                            <div className={classNames("titleBar-bar", classes.bar)}>
+                                {!this.state.openSearch &&
+                                    (this.props.useMobileBackButton ? (
+                                        <BackLink
+                                            className={classNames(
+                                                "titleBar-leftFlexBasis",
+                                                "titleBar-backLink",
+                                                classes.leftFlexBasis,
+                                            )}
+                                            linkClassName={classes.button}
                                         />
-                                    </div>
-                                </>
-                            )}
-                            <ConditionalWrap
-                                className={classNames("titleBar-rightFlexBasis", classes.rightFlexBasis)}
-                                condition={!!showMobileDropDown}
-                            >
-                                {!this.state.openSearch && (
-                                    <div className={classes.extraMeBoxIcons}>
-                                        {TitleBar.extraMeBoxComponents.map((ComponentName, index) => {
-                                            return <ComponentName key={index} />;
-                                        })}
-                                    </div>
+                                    ) : (
+                                        !hamburger && <FlexSpacer className="pageHeading-leftSpacer" />
+                                    ))}
+                                {!isMobile && (
+                                    <HeaderLogo
+                                        className={classNames("titleBar-logoContainer", classes.logoContainer)}
+                                        logoClassName="titleBar-logo"
+                                        logoType={LogoType.DESKTOP}
+                                    />
                                 )}
-                                <CompactSearch
-                                    className={classNames("titleBar-compactSearch", classes.compactSearch, {
-                                        isCentered: this.state.openSearch,
-                                    })}
-                                    focusOnMount
-                                    open={this.state.openSearch}
-                                    onSearchButtonClick={this.openSearch}
-                                    onCloseSearch={this.closeSearch}
-                                    cancelButtonClassName={classNames(
-                                        "titleBar-searchCancel",
-                                        classes.topElement,
-                                        classes.searchCancel,
+                                {!this.state.openSearch && !isMobile && (
+                                    <TitleBarNav
+                                        {...dummyNavigationData()}
+                                        className={classNames("titleBar-nav", classes.nav)}
+                                        linkClassName={classNames("titleBar-navLink", classes.topElement)}
+                                        linkContentClassName="titleBar-navLinkContent"
+                                    />
+                                )}
+                                {showMobileDropDown && !showHamburger && (
+                                    <MobileDropDown
+                                        title={this.props.title!}
+                                        buttonClass={classNames("titleBar-mobileDropDown")}
+                                    >
+                                        {this.props.mobileDropDownContent}
+                                    </MobileDropDown>
+                                )}
+
+                                {showHamburger && (
+                                    <>
+                                        <Hamburger buttonClassName={classes.hamburger} contents={hamburger} />
+                                        <FlexSpacer
+                                            className={hamburgerClasses().spacer(
+                                                1 + TitleBar.extraMeBoxComponents.length,
+                                            )}
+                                        />
+                                        <div className={classes.logoCenterer}>
+                                            <HeaderLogo
+                                                className={classNames("titleBar-logoContainer", classes.logoContainer)}
+                                                logoClassName="titleBar-logo"
+                                                logoType={LogoType.MOBILE}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                                <ConditionalWrap
+                                    className={classNames("titleBar-rightFlexBasis", classes.rightFlexBasis)}
+                                    condition={!!showMobileDropDown}
+                                >
+                                    {!this.state.openSearch && (
+                                        <div className={classes.extraMeBoxIcons}>
+                                            {TitleBar.extraMeBoxComponents.map((ComponentName, index) => {
+                                                return <ComponentName key={index} />;
+                                            })}
+                                        </div>
                                     )}
-                                    cancelContentClassName="meBox-buttonContent"
-                                    buttonClass={classNames(classes.button, {
-                                        [classes.buttonOffset]: !isMobile && this.isGuest,
-                                    })}
-                                    showingSuggestions={this.state.showingSuggestions}
-                                    onOpenSuggestions={this.setOpenSuggestions}
-                                    onCloseSuggestions={this.setCloseSuggestions}
-                                    buttonContentClassName={classNames(
-                                        classesMeBox.buttonContent,
-                                        "meBox-buttonContent",
-                                    )}
-                                    clearButtonClass={classes.clearButtonClass}
-                                />
-                                {isMobile ? this.renderMobileMeBox() : this.renderDesktopMeBox()}
-                            </ConditionalWrap>
-                        </div>
+                                    <CompactSearch
+                                        className={classNames("titleBar-compactSearch", classes.compactSearch, {
+                                            isCentered: this.state.openSearch,
+                                        })}
+                                        focusOnMount
+                                        open={this.state.openSearch}
+                                        onSearchButtonClick={this.openSearch}
+                                        onCloseSearch={this.closeSearch}
+                                        cancelButtonClassName={classNames(
+                                            "titleBar-searchCancel",
+                                            classes.topElement,
+                                            classes.searchCancel,
+                                        )}
+                                        cancelContentClassName="meBox-buttonContent"
+                                        buttonClass={classNames(classes.button, {
+                                            [classes.buttonOffset]: !isMobile && this.isGuest,
+                                        })}
+                                        showingSuggestions={this.state.showingSuggestions}
+                                        onOpenSuggestions={this.setOpenSuggestions}
+                                        onCloseSuggestions={this.setCloseSuggestions}
+                                        buttonContentClassName={classNames(
+                                            classesMeBox.buttonContent,
+                                            "meBox-buttonContent",
+                                        )}
+                                        clearButtonClass={classes.clearButtonClass}
+                                    />
+                                    {isMobile ? this.renderMobileMeBox() : this.renderDesktopMeBox()}
+                                </ConditionalWrap>
+                            </div>
+                        </DetectableOverflow>
                     </PanelWidgetHorizontalPadding>
                 </Container>
             </HashOffsetReporter>,
@@ -220,10 +260,12 @@ export class TitleBar extends React.Component<IProps, IState> {
             this.context.offsetClass,
             containerElement.className,
         );
+        window.addEventListener("resize", this.checkForBreakPoints);
     }
 
     public componentWillUnmount() {
         this.context.resetScrollOffset();
+        window.removeEventListener("resize", this.checkForBreakPoints);
     }
 
     private renderMobileMeBox() {
@@ -322,6 +364,19 @@ export class TitleBar extends React.Component<IProps, IState> {
         const currentUser = this.props.currentUser.data;
         return !!isUserGuest(currentUser);
     }
+
+    private checkForBreakPoints = debounce(() => {
+        const windowSize = getCurrentWindowWidth();
+        window.console.log("");
+        window.console.log("checkForBreakPoints");
+        window.console.log("this.state.breakPointHamburger: ", this.state.breakPointHamburger);
+        window.console.log("windowSize: ", windowSize);
+        if (windowSize) {
+            this.setState({
+                breakPointHamburgerActive: windowSize <= this.state.breakPointHamburger,
+            });
+        }
+    }, 200);
 }
 
 const withRedux = connect(mapUsersStoreState);

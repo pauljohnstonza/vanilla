@@ -31,6 +31,7 @@ import { IButtonType } from "@library/forms/styleHelperButtonInterface";
 import { buttonResetMixin, ButtonTypes } from "@library/forms/buttonStyles";
 import generateButtonClass from "@library/forms/styleHelperButtonGenerator";
 import { media } from "typestyle";
+import { embedMenuMediaQueries } from "@rich-editor/editor/pieces/embedMenuStyles";
 
 enum TitleBarBorderType {
     BORDER = "border",
@@ -193,14 +194,17 @@ export const titleBarVariables = useThemeCache(() => {
     });
 
     const titleBarBreakPoints = makeThemeVars("titleBarBreakPoints", {
-        noBleed: 100000,
+        hamburger: 800,
     });
 
-    const mediaQueries = () => {
-        const noBleed = (styles: NestedCSSProperties) => {
+    const mediaQueries = (adjustments?: { hamburger?: number }) => {
+        if (!adjustments) {
+            adjustments = {};
+        }
+        const hamburger = (styles: NestedCSSProperties) => {
             return media(
                 {
-                    maxWidth: px(titleBarBreakPoints.noBleed),
+                    maxWidth: unit(adjustments!.hamburger ?? titleBarBreakPoints.hamburger),
                     // minWidth: useMinWidth ? px(panelLayoutBreakPoints.twoColumn + 1) : undefined,
                 },
                 styles,
@@ -208,7 +212,7 @@ export const titleBarVariables = useThemeCache(() => {
         };
 
         return {
-            noBleed,
+            hamburger,
         };
     };
 
@@ -294,6 +298,7 @@ export const titleBarClasses = useThemeCache(() => {
                 },
             },
         },
+        // ...mediaQueries.hamburger({}),
         // ...mediaQueries.oneColumnDown({
         //     height: px(vars.sizing.mobile.height),
         // }).$nest,

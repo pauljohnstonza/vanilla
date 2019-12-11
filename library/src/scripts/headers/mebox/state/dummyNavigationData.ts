@@ -22,6 +22,19 @@ export const dummyNavigationData = () => {
                 children: t("Help Menu", "Help"),
                 permission: "kb.view",
             },
+            {
+                to: "/categories",
+                children: t("Categories"),
+            },
+            {
+                to: "/discussions",
+                children: t("Discussions"),
+            },
+            {
+                to: "/kb",
+                children: t("Help Menu", "Help"),
+                permission: "kb.view",
+            },
         ],
     };
 };
