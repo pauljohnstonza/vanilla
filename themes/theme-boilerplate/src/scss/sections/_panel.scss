@@ -195,17 +195,21 @@
             border: $panel-item_border;
             border-radius: $panel_item-borderRadius;
             width: 100%;
-            color: $panel_fg;
-            background-color: $panel-item_bg;
-            border: $panel-item_border;
+            @if ($colorFromDynamicTheme) {
+                color: $panel_fg;
+                background-color: $panel-item_bg;
+                border: $panel-item_border;
+            }
             transition: transition(color), transition(background-color);
 
-            &:hover,
-            &:focus,
-            &:active {
-                color: $panel-item_fg;
-                background-color: $panel-item-hover_bg;
-                border-color: $panel-item-hover_border;
+            @if ($colorFromDynamicTheme) {
+                &:hover,
+                &:focus,
+                &:active {
+                    color: $panel-item_fg;
+                    background-color: $panel-item-hover_bg;
+                    border-color: $panel-item-hover_border;
+                }
             }
         }
 
@@ -223,10 +227,12 @@
             margin-left: 10px;
             line-height: $theme-photo-small_size;
 
-            &:focus,
-            &:hover,
-            &:active {
-                color: $panel-item-hover_fg;
+            @if ($colorFromDynamicTheme) {
+                &:focus,
+                &:hover,
+                &:active {
+                    color: $panel-item-hover_fg;
+                }
             }
 
         }
@@ -295,9 +301,13 @@ body.Section-EditProfile .Box,
         display: flex;
         align-items: center;
         padding: $panel-item_padding;
-        border: $panel-item_border;
+        @if ($colorFromDynamicTheme) {
+            border: $panel-item_border;
+        }
         border-radius: $panel_item-borderRadius;
-        color: $panel_fg;
+        @if ($colorFromDynamicTheme) {
+            color: $panel_fg;
+        }
         font-weight: $global-semibold_fontWeight;
 
         .Aside {
@@ -313,17 +323,21 @@ body.Section-EditProfile .Box,
         border: $panel-item_border;
         border-radius: $panel_item-borderRadius;
         width: 100%;
-        color: $panel_fg;
-        background-color: $panel-item_bg;
-        border: $panel-item_border;
-        transition: transition(color), transition(background-color);
+        @if ($colorFromDynamicTheme) {
+            color: $panel_fg;
+            background-color: $panel-item_bg;
+            border: $panel-item_border;
+            transition: transition(color), transition(background-color);
+        }
 
-        &:hover,
-        &:focus,
-        &:active {
-            color: $panel-item-hover_fg;
-            background-color: $panel-item-hover_bg;
-            border-color: $panel-item-hover_border;
+        @if ($colorFromDynamicTheme) {
+            &:hover,
+            &:focus,
+            &:active {
+                color: $panel-item-hover_fg;
+                background-color: $panel-item-hover_bg;
+                border-color: $panel-item-hover_border;
+            }
         }
     }
 
