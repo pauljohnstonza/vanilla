@@ -23,5 +23,11 @@
     "type": "theme",
     "build": {
         "process": "v1"
+    },
+    "assets": {
+        "variables": {
+            "type": "json",
+            "file": "variables.json"
+        }
     }
 }

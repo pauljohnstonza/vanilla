@@ -1,0 +1,9 @@
+{
+    "global": {
+        "mainColors": {
+            "primary": "#8e74ff",
+            "fg": "#fff",
+            "bg": "#0e0d17"
+        }
+    }
+}

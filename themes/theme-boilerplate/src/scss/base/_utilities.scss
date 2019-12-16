@@ -814,7 +814,6 @@
     transition-timing-function: ease;
 }
 
-/*
  @mixin spinnerLoader($dimension: 18px, $thickness: 3px, $color: $global-color_primary, $speed: 0.7s) {
     @include defaultTransition(opacity);
     display: block;
@@ -836,8 +835,6 @@
         height: $dimension;
     }
 }
-
- */
 
 
 $spinnerOffset: 73deg;
