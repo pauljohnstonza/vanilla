@@ -11,7 +11,7 @@ import { globalVariables } from "@vanilla/library/src/scripts/styles/globalStyle
 import { colorOut } from "@vanilla/library/src/scripts/styles/styleHelpersColors";
 
 // To use compatibility styles, set '$colorFromDynamicTheme : true;' in custom.scss
-// and call compatibilityStyles in javascript.js. Don't forget to build.
+// $Configuration['Feature']['DeferredLegacyScripts']['Enabled'] = true;
 export const compatibilityStyles = useThemeCache(() => {
     const vars = globalVariables();
     const mainColors = vars.mainColors;
